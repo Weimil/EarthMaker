@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using Miscellaneous;
+using static Miscellaneous.Constants;
 using UnityEngine;
 
 namespace Level.BlockStuff
@@ -15,7 +14,7 @@ namespace Level.BlockStuff
          *
          * Documentation in "MineClone.drawio"
          */
-        public static readonly Vector3[] FaceCheck = new Vector3[6]
+        public static readonly Vector3[] FaceCheck =
         {
             // Side facing ...
             new Vector3(0, 1, 0), // ... Top
@@ -26,7 +25,7 @@ namespace Level.BlockStuff
             new Vector3(-1, 0, 0) // ... West
         };
 
-        private static readonly List<Vector3> FullBlockVertex = new List<Vector3>
+        private static readonly Vector3[] FullBlockVertex =
         {
             new Vector3(0, 0, 0), // 0
             new Vector3(0, 0, 1), // 1
@@ -38,50 +37,159 @@ namespace Level.BlockStuff
             new Vector3(1, 1, 1) // 7
         };
 
-        private static readonly List<int>[] FullBlockTriangles =
+        private static readonly int[,] FullBlockTriangles =
         {
             // Side facing ...
-            new List<int> {4, 5, 6, 6, 5, 7}, // ... Top
-            new List<int> {0, 2, 1, 1, 2, 3}, // ... Bottom
-            new List<int> {1, 3, 5, 5, 3, 7}, // ... North
-            new List<int> {0, 4, 2, 2, 4, 6}, // ... South
-            new List<int> {2, 6, 3, 3, 6, 7}, // ... East
-            new List<int> {0, 1, 4, 4, 1, 5} // ... West
+            {4, 5, 6, 7}, // ... Top
+            {0, 2, 1, 3}, // ... Bottom
+            {1, 3, 5, 7}, // ... North
+            {0, 4, 2, 6}, // ... South
+            {2, 6, 3, 7}, // ... East
+            {0, 1, 4, 5} // ... West
         };
 
-        public static List<Vector3> VertexListFromFace(int meshType, int face, Vector3 pos)
+        private static readonly Vector3[] TMPFullBlockVertex =
+        {
+            new Vector3(0, 0, 0), // 0
+            new Vector3(0, 0, 1), // 1
+            new Vector3(1, 0, 0), // 2
+            new Vector3(1, 0, 1), // 3
+            new Vector3(0, 1, 0), // 4
+            new Vector3(0, 1, 1), // 5
+            new Vector3(1, 1, 0), // 6
+            new Vector3(1, 1, 1) // 7
+        };
+
+        private static readonly int[,] TMPFullBlockTriangles =
+        {
+            // Side facing ...
+            {4, 5, 6, 6, 5, 7}, // ... Top
+            {0, 2, 1, 1, 2, 3}, // ... Bottom
+            {1, 3, 5, 5, 3, 7}, // ... North
+            {0, 4, 2, 2, 4, 6}, // ... South
+            {2, 6, 3, 3, 6, 7}, // ... East
+            {0, 1, 4, 4, 1, 5}  // ... West
+        };
+
+        private static readonly Vector2[] FullBlockUVs =
+        {
+            new Vector2(0, 0),
+            new Vector3(0, 1),
+            new Vector3(1, 0),
+            new Vector3(1, 1)
+        };
+
+        public static void Mesh(
+            ref List<int> triangles, ref List<Vector3> vertex, ref List<Vector2> uvs, ref int vertexIndex,
+            Vector3 position, Block block, int face
+        )
+        {
+            TriangleListFromFace(block.MeshType, ref vertexIndex, ref triangles);
+            VertexListFromFace(block.MeshType, face, position, ref vertex);
+            UVsListFromFace(block.MeshType, face, block.TextureMapIndex, ref uvs);
+        }
+
+        private static void VertexListFromFace(int meshType, int face, Vector3 pos, ref List<Vector3> list)
         {
             switch (meshType)
             {
-                case 1:
-                    return FullBlockTriangles[face].Select(x => FullBlockVertex[x] + pos) as List<Vector3>;
-                default:
-                    ErrorLogger.Error(100);
-                    return null;
+                case (int) BlockMeshType.FullBlock:
+                    list.Add(FullBlockVertex[FullBlockTriangles[face, 0]] + pos);
+                    list.Add(FullBlockVertex[FullBlockTriangles[face, 1]] + pos);
+                    list.Add(FullBlockVertex[FullBlockTriangles[face, 2]] + pos);
+                    list.Add(FullBlockVertex[FullBlockTriangles[face, 3]] + pos);
+                    break;
+                case (int) BlockMeshType.TMPFullBlock:
+                    for (int i = 0; i < TMPFullBlockTriangles.GetLength(1); i++) list.Add(TMPFullBlockVertex[TMPFullBlockTriangles[face,i]] + pos);
+                    break;
             }
         }
 
-        public static List<int> TriangleListFromFace(int meshType, int face, int vertexIndex)
+        private static void TriangleListFromFace(int meshType, ref int vertexIndex, ref List<int> list)
         {
             switch (meshType)
             {
-                case 1:
-                    return new List<int>(FullBlockTriangles[face].Count).Select(x => x = vertexIndex++) as List<int>;
-                default:
-                    ErrorLogger.Error(101);
-                    return null;
+                case (int) BlockMeshType.FullBlock:
+                    list.Add(vertexIndex);
+                    list.Add(vertexIndex + 1);
+                    list.Add(vertexIndex + 2);
+                    list.Add(vertexIndex + 1);
+                    list.Add(vertexIndex + 2);
+                    list.Add(vertexIndex + 3);
+                    vertexIndex += 4;
+                    break;
+                case (int) BlockMeshType.TMPFullBlock:
+                    for (int i = 0; i < TMPFullBlockTriangles.GetLength(1); i++)
+                    {
+                        list.Add(vertexIndex);
+                        vertexIndex++;
+                    }
+                    break;
+
             }
         }
 
-        public static List<Vector3> UVsListFromFace(int meshType, int face, Vector3 pos)
+        private static void UVsListFromFace(int meshType, int face, int textureIndex, ref List<Vector2> list)
         {
             switch (meshType)
             {
-                case 1:
-                    return (List<Vector3>) FullBlockTriangles[face].Select(x => FullBlockVertex[x] + pos);
-                default:
-                    ErrorLogger.Error(102);
-                    return null;
+                case (int) BlockMeshType.FullBlock:
+                    list.Add(new Vector2(
+                        FullBlockUVs[0].x / TextureWidth + 1f / TextureWidth * face,
+                        FullBlockUVs[0].y / TextureHeight + 1f / TextureHeight * textureIndex
+                    ));
+                    list.Add(new Vector2(
+                        FullBlockUVs[1].x / TextureWidth + 1f / TextureWidth * face,
+                        FullBlockUVs[1].y / TextureHeight + 1f / TextureHeight * textureIndex
+                    ));
+                    list.Add(new Vector2(
+                        FullBlockUVs[2].x / TextureWidth + 1f / TextureWidth * face,
+                        FullBlockUVs[2].y / TextureHeight + 1f / TextureHeight * textureIndex
+                    ));
+                    list.Add(new Vector2(
+                        FullBlockUVs[3].x / TextureWidth + 1f / TextureWidth * face,
+                        FullBlockUVs[3].y / TextureHeight + 1f / TextureHeight * textureIndex
+                    ));
+                    break;
+                case (int) BlockMeshType.TMPFullBlock:
+                    for (int i = 0; i < TMPFullBlockTriangles.GetLength(1); i++)
+                        switch (face)
+                        {
+                            case 0:
+                            case 1:
+                                list.Add(new Vector2(
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].x / TextureWidth +
+                                        1f / TextureWidth * face,
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].z / TextureHeight +
+                                        1f / TextureHeight * textureIndex
+                                    )
+                                );
+                                break;
+
+                            case 2:
+                            case 3:
+                                list.Add(new Vector2(
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].x / TextureWidth +
+                                        1f / TextureWidth * face,
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].y / TextureHeight +
+                                        1f / TextureHeight * textureIndex
+                                    )
+                                );
+                                break;
+
+                            case 4:
+                            case 5:
+                                list.Add(new Vector2(
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].z / TextureWidth +
+                                        1f / TextureWidth * face,
+                                        TMPFullBlockVertex[TMPFullBlockTriangles[face,i]].y / TextureHeight +
+                                        1f / TextureHeight * textureIndex
+                                    )
+                                );
+                                break;
+                        }
+                    break;
+
             }
         }
     }

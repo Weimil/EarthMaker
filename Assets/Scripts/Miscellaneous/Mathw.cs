@@ -4,7 +4,7 @@ using UnityEngine;
 // ReSharper disable PossibleLossOfFraction
 // ReSharper disable IntVariableOverflowInUncheckedContext
 
-namespace Miscellaneous.Utils
+namespace Miscellaneous
 {
     public static class Mathw
     {

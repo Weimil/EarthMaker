@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using Miscellaneous.Utils;
+using Miscellaneous;
 using UnityEngine;
+using static Miscellaneous.Constants;
 
 namespace LoadManagement
 {
@@ -14,15 +15,15 @@ namespace LoadManagement
         public void Init(LoadServer server)
         {
             ViewDistanceMask = new List<Vector2>();
-            ViewDistance = 2;
+            ViewDistance = 4;
             _server = server;
             CreateViewDistanceMask();
-            SendRequest(Vector3.zero);
+            SendRequest(transform.position);
         }
 
         private void Update()
         {
-            Vector3 currentPosition = Mathw.Vector3IntDivision(transform.position, 16);
+            Vector3 currentPosition = Mathw.Vector3IntDivision(transform.position, ChunkWidth);
             if (_position != currentPosition) SendRequest(currentPosition);
         }
 
@@ -32,10 +33,9 @@ namespace LoadManagement
             HashSet<Vector2> hashSet = new HashSet<Vector2>();
             for (int i = 0; i < ViewDistanceMask.Count; i++)
                 hashSet.Add(new Vector2(
-                        ViewDistanceMask[i].x + (int) _position.x,
-                        ViewDistanceMask[i].y + (int) _position.z
-                    )
-                );
+                    ViewDistanceMask[i].x + (int) _position.x,
+                    ViewDistanceMask[i].y + (int) _position.z
+                ));
             _server.ChunkRequest(hashSet);
         }
 
@@ -43,13 +43,9 @@ namespace LoadManagement
         {
             ViewDistanceMask.Clear();
             int max = ViewDistance * 2 + 1;
-
             for (int i = 0; i < max; i++)
             for (int j = 0; j < max; j++)
-                ViewDistanceMask.Add(new Vector2(
-                    i - ViewDistance,
-                    j - ViewDistance
-                ));
+                ViewDistanceMask.Add(new Vector2(i - ViewDistance, j - ViewDistance));
         }
     }
 }

@@ -11,9 +11,9 @@ namespace LoadManagement
         private HashSet<Vector2> _toBeUnloaded;
         private HashSet<Vector2> _toBeLoaded;
 
-        public void Init(World world)
+        public void Init()
         {
-            _world = world;
+            _world = GetComponent<World>();
             _loadedChunks = new HashSet<Vector2>();
             _toBeUnloaded = new HashSet<Vector2>();
             _toBeLoaded = new HashSet<Vector2>();
