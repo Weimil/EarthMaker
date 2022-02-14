@@ -15,7 +15,7 @@ namespace LoadManagement
         public void Init(LoadServer server)
         {
             ViewDistanceMask = new List<Vector2>();
-            ViewDistance = 4;
+            ViewDistance = 1;
             _server = server;
             CreateViewDistanceMask();
             SendRequest(transform.position);

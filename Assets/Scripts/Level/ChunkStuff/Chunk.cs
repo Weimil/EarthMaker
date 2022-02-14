@@ -5,7 +5,6 @@ using Level.BlockStuff;
 using Unity.Mathematics;
 using UnityEngine;
 using static Miscellaneous.Constants;
-using static Unity.Mathematics.noise;
 
 namespace Level.ChunkStuff
 {
@@ -15,7 +14,6 @@ namespace Level.ChunkStuff
     public class Chunk : MonoBehaviour
     {
         private Block[,,] _blocks;
-        private int[,] _heightMap;
         private MeshCollider _meshCollider;
         private MeshRenderer _meshRenderer;
         private MeshFilter _meshFilter;
@@ -23,14 +21,11 @@ namespace Level.ChunkStuff
         private List<Vector3> _vertex;
         private List<Vector2> _uvs;
         private Vector3 _position;
-        private Vector2 _coord;
-        private float _scale;
         private int _vertexIndex;
 
-        public void Init()
+        private void Awake()
         {
             _blocks = new Block[ChunkWidth, ChunkHeight, ChunkWidth];
-            _heightMap = new int[ChunkWidth + 2, ChunkWidth + 2];
             _meshCollider = GetComponent<MeshCollider>();
             _meshRenderer = GetComponent<MeshRenderer>();
             _meshFilter = GetComponent<MeshFilter>();
@@ -39,17 +34,22 @@ namespace Level.ChunkStuff
             _uvs = new List<Vector2>();
             _vertexIndex = 0;
             _position = transform.position;
+        }
 
-            CreateHeightMap();
-            _blocks = Population.Populate(_blocks, _heightMap);
-            RenderChunk();
+        public void Init()
+        {
+            int[][] heightMap = CreateHeightMap();
+            Population.Populate(ref _blocks, ref heightMap);
+            RenderChunk(heightMap);
             CreateMesh();
         }
 
-        private void CreateHeightMap()
+        private int[][] CreateHeightMap()
         {
-            for (int x = 0; x < _heightMap.GetLength(0); x++)
-            for (int z = 0; z < _heightMap.GetLength(1); z++)
+            int[][] heightMap = new int[ChunkWidth + 2][];
+
+            for (int x = 0; x < heightMap.Length; x++)
+            for (int z = 0; z < heightMap[x].Length; z++)
             {
                 float newZ = (z + _position.z + 0.0001f) / Scale;
                 float newX = (x + _position.x + 0.0001f) / Scale;
@@ -61,33 +61,35 @@ namespace Level.ChunkStuff
 
                 for (int i = 0; i < 4; i++)
                 {
-                    noiseValue += divider * snoise(new float3(newX * multiplier, Seed, newZ * multiplier));
+                    noiseValue += divider * noise.snoise(new float3(newX * multiplier, Seed, newZ * multiplier));
                     totalDivisions += divider;
                     multiplier *= 2;
                     divider /= 2;
                 }
 
-                noiseValue = (float) Math.Pow(noiseValue, 2);
+                noiseValue = (float) (Math.Pow(noiseValue, 3) / totalDivisions * 32 + 40);
 
-                _heightMap[x, z] = (int) (noiseValue / totalDivisions * 32 + 40);
+                heightMap[x][z] = (int) (noiseValue > ChunkHeight ? ChunkHeight : noiseValue);
             }
+
+            return heightMap;
         }
 
-        private void RenderChunk()
+        private void RenderChunk(int[][] heightMap)
         {
             for (int x = 0; x < _blocks.GetLength(0); x++)
             for (int y = 0; y < _blocks.GetLength(1); y++)
             for (int z = 0; z < _blocks.GetLength(2); z++)
                 if (_blocks[x, y, z] != null)
                     for (int face = 0; face < 6; face++)
-                        if (IsVisible(x, y, z, face))
+                        if (IsVisible(x, y, z, face, heightMap))
                             MeshTables.Mesh(
                                 ref _triangles, ref _vertex, ref _uvs, ref _vertexIndex,
                                 new Vector3(x - 8, y, z - 8), _blocks[x, y, z], face
                             );
         }
 
-        private bool IsVisible(int x, int y, int z, int face)
+        private bool IsVisible(int x, int y, int z, int face, int[][] heightMap)
         {
             int checkX = x + (int) MeshTables.FaceCheck[face].x;
             int checkY = y + (int) MeshTables.FaceCheck[face].y;
@@ -99,7 +101,7 @@ namespace Level.ChunkStuff
             )
                 return _blocks[checkX, checkY, checkZ] == null;
 
-            if (_heightMap[checkX + 1, checkZ + 1] >= y)
+            if (heightMap[checkX + 1][checkZ + 1] >= y)
                 return false;
 
             return true;

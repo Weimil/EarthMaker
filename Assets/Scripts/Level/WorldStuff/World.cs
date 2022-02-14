@@ -59,8 +59,8 @@ namespace Level.WorldStuff
             if (_regions.ContainsKey(vectorDiv))
             {
                 _regions[vectorDiv].Unload(vector);
-                if (_regions[vectorDiv].ChunksCount() == 0)
-                    Destroy(_regions[vectorDiv].gameObject);
+                // if (_regions[vectorDiv].ChunksCount() == 0)
+                //     Destroy(_regions[vectorDiv].gameObject);
             }
         }
     }

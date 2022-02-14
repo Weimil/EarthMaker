@@ -49,10 +49,5 @@ namespace Level.RegionStuff
                 _chunks.Remove(vector);
             }
         }
-
-        public int ChunksCount()
-        {
-            return _chunks.Count;
-        }
     }
 }
