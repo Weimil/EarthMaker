@@ -14,7 +14,8 @@ namespace Level.BlockStuff
          *
          * Documentation in "MineClone.drawio"
          */
-        public static readonly Vector3[] FaceCheck = {
+        public static readonly Vector3[] FaceCheck =
+        {
             // Side facing ...
             new Vector3(0, 1, 0), // ... Top
             new Vector3(0, -1, 0), // ... Bottom
@@ -24,7 +25,8 @@ namespace Level.BlockStuff
             new Vector3(-1, 0, 0) // ... West
         };
 
-        private static readonly Vector3[] FullBlockVertex = {
+        private static readonly Vector3[] FullBlockVertex =
+        {
             new Vector3(0, 0, 0), // 0
             new Vector3(0, 0, 1), // 1
             new Vector3(1, 0, 0), // 2
@@ -35,24 +37,27 @@ namespace Level.BlockStuff
             new Vector3(1, 1, 1) // 7
         };
 
-        private static readonly int[][] FullBlockTriangles = {
+        private static readonly int[][] FullBlockTriangles =
+        {
             // Side facing ...
-            new [] {4, 5, 6, 7}, // ... Top
-            new [] {0, 2, 1, 3}, // ... Bottom
-            new [] {1, 3, 5, 7}, // ... North
-            new [] {0, 4, 2, 6}, // ... South
-            new [] {2, 6, 3, 7}, // ... East
-            new [] {0, 1, 4, 5} // ... West
+            new[] {4, 5, 6, 7}, // ... Top
+            new[] {0, 2, 1, 3}, // ... Bottom
+            new[] {1, 3, 5, 7}, // ... North
+            new[] {0, 4, 2, 6}, // ... South
+            new[] {2, 6, 3, 7}, // ... East
+            new[] {0, 1, 4, 5} // ... West
         };
 
-        private static readonly Vector2[] FullBlockUVs = {
+        private static readonly Vector2[] FullBlockUVs =
+        {
             new Vector2(0, 0),
             new Vector3(0, 1),
             new Vector3(1, 0),
             new Vector3(1, 1)
         };
 
-        private static readonly Vector3[] TMPFullBlockVertex = {
+        private static readonly Vector3[] TMPFullBlockVertex =
+        {
             new Vector3(0, 0, 0), // 0
             new Vector3(0, 0, 1), // 1
             new Vector3(1, 0, 0), // 2
@@ -63,15 +68,17 @@ namespace Level.BlockStuff
             new Vector3(1, 1, 1) // 7
         };
 
-        private static readonly int[][] TMPFullBlockTriangles = {
+        private static readonly int[][] TMPFullBlockTriangles =
+        {
             // Side facing ...
-            new [] {4, 5, 6, 6, 5, 7}, // ... Top
-            new [] {0, 2, 1, 1, 2, 3}, // ... Bottom
-            new [] {1, 3, 5, 5, 3, 7}, // ... North
-            new [] {0, 4, 2, 2, 4, 6}, // ... South
-            new [] {2, 6, 3, 3, 6, 7}, // ... East
-            new [] {0, 1, 4, 4, 1, 5}  // ... West
+            new[] {4, 5, 6, 6, 5, 7}, // ... Top
+            new[] {0, 2, 1, 1, 2, 3}, // ... Bottom
+            new[] {1, 3, 5, 5, 3, 7}, // ... North
+            new[] {0, 4, 2, 2, 4, 6}, // ... South
+            new[] {2, 6, 3, 3, 6, 7}, // ... East
+            new[] {0, 1, 4, 4, 1, 5} // ... West
         };
+
         public static void Mesh(
             ref List<int> triangles, ref List<Vector3> vertex, ref List<Vector2> uvs,
             ref int vertexIndex, Vector3 position, Block block, int face
@@ -93,7 +100,8 @@ namespace Level.BlockStuff
                     list.Add(FullBlockVertex[FullBlockTriangles[face][3]] + pos);
                     break;
                 case (int) BlockMeshType.TMPFullBlock:
-                    for (int i = 0; i < TMPFullBlockTriangles[face].Length; i++) list.Add(TMPFullBlockVertex[TMPFullBlockTriangles[face][i]] + pos);
+                    for (int i = 0; i < TMPFullBlockTriangles[face].Length; i++)
+                        list.Add(TMPFullBlockVertex[TMPFullBlockTriangles[face][i]] + pos);
                     break;
             }
         }
@@ -117,6 +125,7 @@ namespace Level.BlockStuff
                         list.Add(vertexIndex);
                         vertexIndex++;
                     }
+
                     break;
             }
         }

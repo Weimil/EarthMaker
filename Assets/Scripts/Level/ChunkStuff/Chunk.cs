@@ -32,34 +32,33 @@ namespace Level.ChunkStuff
             _triangles = new List<int>();
             _vertex = new List<Vector3>();
             _uvs = new List<Vector2>();
-            _vertexIndex = 0;
             _position = transform.position;
+            _vertexIndex = 0;
         }
 
         public void Init()
         {
-            int[][] heightMap = CreateHeightMap();
-            Population.Populate(ref _blocks, ref heightMap);
+            int[,] heightMap = CreateHeightMap();
+            Population.Populate(ref _blocks, heightMap);
             RenderChunk(heightMap);
-            CreateMesh();
         }
 
-        private int[][] CreateHeightMap()
+        private int[,] CreateHeightMap()
         {
-            int[][] heightMap = new int[ChunkWidth + 2][];
+            int[,] heightMap = new int[ChunkWidth + 2, ChunkWidth + 2];
 
-            for (int x = 0; x < heightMap.Length; x++)
-            for (int z = 0; z < heightMap[x].Length; z++)
+            for (int x = 0; x < heightMap.GetLength(0); x++)
+            for (int z = 0; z < heightMap.GetLength(1); z++)
             {
-                float newZ = (z + _position.z + 0.0001f) / Scale;
-                float newX = (x + _position.x + 0.0001f) / Scale;
+                float newZ = (z + _position.z + 0.001f) / Scale;
+                float newX = (x + _position.x + 0.001f) / Scale;
 
                 float totalDivisions = 0;
                 float noiseValue = 0;
                 float multiplier = 1;
                 float divider = 1;
 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < Octaves; i++)
                 {
                     noiseValue += divider * noise.snoise(new float3(newX * multiplier, Seed, newZ * multiplier));
                     totalDivisions += divider;
@@ -67,15 +66,15 @@ namespace Level.ChunkStuff
                     divider /= 2;
                 }
 
-                noiseValue = (float) (Math.Pow(noiseValue, 3) / totalDivisions * 32 + 40);
+                noiseValue = (float) (Math.Pow(Math.Abs(noiseValue), 2.1f) / totalDivisions * 32 + 40);
 
-                heightMap[x][z] = (int) (noiseValue > ChunkHeight ? ChunkHeight : noiseValue);
+                heightMap[x, z] = (int) (noiseValue);
             }
 
             return heightMap;
         }
 
-        private void RenderChunk(int[][] heightMap)
+        private void RenderChunk(int[,] heightMap)
         {
             for (int x = 0; x < _blocks.GetLength(0); x++)
             for (int y = 0; y < _blocks.GetLength(1); y++)
@@ -89,7 +88,7 @@ namespace Level.ChunkStuff
                             );
         }
 
-        private bool IsVisible(int x, int y, int z, int face, int[][] heightMap)
+        private bool IsVisible(int x, int y, int z, int face, int[,] heightMap)
         {
             int checkX = x + (int) MeshTables.FaceCheck[face].x;
             int checkY = y + (int) MeshTables.FaceCheck[face].y;
@@ -101,13 +100,13 @@ namespace Level.ChunkStuff
             )
                 return _blocks[checkX, checkY, checkZ] == null;
 
-            if (heightMap[checkX + 1][checkZ + 1] >= y)
+            if (heightMap[checkX + 1, checkZ + 1] >= y)
                 return false;
 
             return true;
         }
 
-        private void CreateMesh()
+        public void CreateMesh()
         {
             Mesh mesh = new Mesh
             {

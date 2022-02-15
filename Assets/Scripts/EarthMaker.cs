@@ -2,6 +2,7 @@ using Level.ChunkStuff;
 using Level.RegionStuff;
 using Level.WorldStuff;
 using LoadManagement;
+using Miscellaneous;
 using UnityEngine;
 
 public class EarthMaker : MonoBehaviour
@@ -11,7 +12,10 @@ public class EarthMaker : MonoBehaviour
 
     private void Start()
     {
-        gameObject.AddComponent<World>().Init(Region, Chunk);
+        Constants.Chunk = Chunk;
+        Constants.Region = Region;
+
+        gameObject.AddComponent<World>().Init();
         gameObject.AddComponent<LoadServer>().Init();
 
         GameObject.FindWithTag("Player").AddComponent<LoadClient>().Init(GetComponent<LoadServer>());
