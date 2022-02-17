@@ -13,7 +13,6 @@ namespace Level.BlockStuff
             TextureMapIndex = textureMapIndex;
         }
     }
-
     public enum BlockTexture
     {
         Debug = 0,

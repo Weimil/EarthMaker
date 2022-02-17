@@ -7,16 +7,17 @@ namespace Miscellaneous
 {
     public class Constants : MonoBehaviour
     {
-        public static readonly int ChunkWidth = 16;
-        public static readonly int ChunkHeight = 256;
-        public static readonly int RegionWidth = 16;
-        public static readonly int TextureWidth = 6;
-        public static readonly int TextureHeight = 8;
-        public static readonly int Seed = 50;
-        public static readonly float Scale = 256f;
-        public static readonly int Octaves = 1;
-        public static Region Region;
-        public static Chunk Chunk;
+        public const int Seed = 50;
+        public const int Octaves = 5;
+        public const int ChunkWidth = 16;
+        public const int ChunkHeight = 256;
+        public const int RegionWidth = 16;
+        public const int TextureWidth = 6;
+        public const int TextureHeight = 8;
+        public const float Scale = 256f;
+
+        public static readonly Chunk ChunkPrefab = Resources.Load<Chunk>("Prefabs/ChunkPrefab");
+        public static readonly Region RegionPrefab = Resources.Load<Region>("Prefabs/RegionPrefab");
         public static readonly Random Random = new Random(Seed);
     }
 }

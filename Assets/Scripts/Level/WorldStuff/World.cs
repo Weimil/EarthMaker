@@ -1,7 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Level.ChunkStuff;
 using Level.RegionStuff;
 using Miscellaneous;
 using static Miscellaneous.Constants;
@@ -13,8 +10,7 @@ namespace Level.WorldStuff
     {
         private Dictionary<Vector2, Region> _regions;
 
-
-        public void Init()
+        public void Awake()
         {
             _regions = new Dictionary<Vector2, Region>();
         }
@@ -22,14 +18,13 @@ namespace Level.WorldStuff
         private void InstantiateRegion(Vector2 vector)
         {
             Region region = Instantiate(
-                Constants.Region,
+                RegionPrefab,
                 new Vector3(vector.x, 0, vector.y) * (ChunkWidth * RegionWidth),
                 Quaternion.identity,
-                gameObject.transform
+                transform
             );
             region.name = $"Region[{vector.x}|{vector.y}]";
             _regions.Add(vector, region);
-            region.Init();
         }
 
         public void Load(Vector2 vector)

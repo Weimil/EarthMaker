@@ -65,9 +65,14 @@ namespace Miscellaneous
             return Vector2IntWrapOffset((int) vectorA.x, (int) vectorA.y, (int) vectorB.x, (int) vectorB.y);
         }
 
+        public static Vector2 Vector2IntWrapOffset(Vector2 vectorA, int offset)
+        {
+            return Vector2IntWrapOffset((int) vectorA.x, (int) vectorA.y, offset, offset);
+        }
+
         public static Vector2 Vector2IntWrapOffset(Vector2 vectorA, int xA, int yA)
         {
-            return Vector2IntWrapOffset((int) vectorA.x, (int) vectorA.y, xA, (int) yA);
+            return Vector2IntWrapOffset((int) vectorA.x, (int) vectorA.y, xA, yA);
         }
 
         public static Vector2 Vector2IntWrapOffset(int xA, int yA, Vector2 vectorA)

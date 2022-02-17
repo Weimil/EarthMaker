@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Level.WorldStuff;
 using UnityEngine;
 
@@ -13,7 +11,7 @@ namespace LoadManagement
         private HashSet<Vector2> _toBeUnloaded;
         private HashSet<Vector2> _toBeLoaded;
 
-        public void Init()
+        public void Awake()
         {
             _world = GetComponent<World>();
             _loadedChunks = new HashSet<Vector2>();

@@ -66,7 +66,7 @@ namespace Level.ChunkStuff
                     divider /= 2;
                 }
 
-                noiseValue = (float) (Math.Pow(Math.Abs(noiseValue), 2.1f) / totalDivisions * 32 + 40);
+                noiseValue = (float) (Math.Pow(noiseValue, 2f) / totalDivisions * 32 + 40);
 
                 heightMap[x, z] = (int) (noiseValue);
             }

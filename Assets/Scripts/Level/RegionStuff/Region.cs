@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Level.ChunkStuff;
-using Miscellaneous;
+using static Miscellaneous.Constants;
 using UnityEngine;
 
 namespace Level.RegionStuff
@@ -10,7 +10,7 @@ namespace Level.RegionStuff
     {
         private Dictionary<Vector2, Chunk> _chunks;
 
-        public void Init()
+        private void Awake()
         {
             _chunks = new Dictionary<Vector2, Chunk>();
         }
@@ -18,7 +18,7 @@ namespace Level.RegionStuff
         public void InstantiateChunk(Vector2 vector)
         {
             Chunk chunk = Instantiate(
-                Constants.Chunk,
+                ChunkPrefab,
                 new Vector3(vector.x, 0, vector.y) * 16f,
                 Quaternion.identity,
                 transform
